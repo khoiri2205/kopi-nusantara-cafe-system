@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kopi Nusantara — Setiap Tegukan Bercerita</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <span class="logo-icon">☕</span>
+        <span class="logo-text">Kopi Nusantara</span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home">Beranda</a></li>
+        <li><a href="#about">Tentang</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#order">Pesan</a></li>
+        <li><a href="#testimonial">Ulasan</a></li>
+        <li><a href="#contact">Kontak</a></li>
+        <li><a href="dashboard.html" style="color:var(--gold);font-weight:700">📊 Dashboard</a></li>
+      </ul>
+      <button class="cart-btn" id="cartBtn" onclick="toggleCart()">
+        🛒 <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="loyalty-nav-btn" id="loyaltyNavBtn" onclick="openLoyaltyPanel()" title="Poin Loyalti Kamu" style="display:none">
+        <span class="loyalty-icon">⭐</span>
+        <span class="loyalty-nav-pts" id="loyaltyNavPts">0 poin</span>
+      </button>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <div class="hero-grain"></div>
+      <div class="hero-circle c1"></div>
+      <div class="hero-circle c2"></div>
+      <div class="hero-circle c3"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">☕ Sejak 2018 · Bandung, Indonesia</p>
+      <h1 class="hero-title">
+        Setiap Tegukan<br /><em>Bercerita</em>
+      </h1>
+      <p class="hero-desc">
+        Kopi pilihan dari petani lokal Nusantara, diseduh dengan hati dan keahlian
+        untuk menghadirkan cita rasa yang tak terlupakan.
+      </p>
+      <div class="hero-actions">
+        <a href="#menu" class="btn-primary">Lihat Menu</a>
+        <a href="#order" class="btn-secondary">Pesan Sekarang</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num" data-target="50">0</span><span>+</span><p>Varian Menu</p></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num" data-target="1200">0</span><span>+</span><p>Pelanggan</p></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num" data-target="6">0</span><span></span><p>Tahun Berdiri</p></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="coffee-card">
+        <div class="coffee-img-wrap">
+          <div class="coffee-emoji">☕</div>
+          <div class="steam s1"></div>
+          <div class="steam s2"></div>
+          <div class="steam s3"></div>
+        </div>
+        <div class="coffee-tag">
+          <strong>V60 Pour Over</strong>
+          <span>Biji Gayo · Arabica</span>
+        </div>
+      </div>
+      <div class="float-badge badge-1">🌟 Best Seller</div>
+      <div class="float-badge badge-2">🌿 Organik</div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-card main-card">
+            <div class="about-icon-big">☕</div>
+            <h3>Manual Brew</h3>
+            <p>V60, Chemex, AeroPress</p>
+          </div>
+          <div class="about-card side-card">
+            <div class="about-icon-big">🌿</div>
+            <h3>100% Lokal</h3>
+            <p>Gayo, Toraja, Flores</p>
+          </div>
+        </div>
+        <div class="about-content">
+          <p class="section-eyebrow">Tentang Kami</p>
+          <h2 class="section-title">Kopi Bukan Sekadar Minuman</h2>
+          <p class="about-text">
+            Kami percaya kopi adalah pengalaman. Dimulai dari biji yang dipilih langsung dari
+            petani di Gayo, Toraja, dan Flores — setiap cangkir yang kami sajikan membawa
+            cerita dari ladang hingga mejamu.
+          </p>
+          <p class="about-text">
+            Barista kami terlatih dengan standar specialty coffee internasional,
+            memastikan setiap seduhan menghasilkan cita rasa terbaik yang kamu bisa nikmati.
+          </p>
+          <div class="about-features">
+            <div class="feature-item">
+              <span class="feature-icon">✓</span>
+              <span>Biji kopi single origin pilihan</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">✓</span>
+              <span>Roasting in-house setiap minggu</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">✓</span>
+              <span>Free WiFi & ruang kerja nyaman</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU SECTION -->
+  <section class="menu-section" id="menu">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Menu Kami</p>
+        <h2 class="section-title">Pilihan untuk Setiap Suasana</h2>
+      </div>
+      <div class="category-tabs" id="categoryTabs">
+        <button class="tab-btn active" data-id="all">Semua</button>
+        <!-- kategori dari API akan diload di sini -->
+      </div>
+      <div class="menu-grid" id="menuGrid">
+        <!-- menu dari API -->
+        <div class="menu-loading">
+          <div class="spinner"></div>
+          <p>Memuat menu...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER SECTION -->
+  <section class="order-section" id="order">
+    <div class="container">
+      <div class="section-header light">
+        <p class="section-eyebrow">Pesan Sekarang</p>
+        <h2 class="section-title">Nikmati Tanpa Antri Lama</h2>
+      </div>
+      <div class="order-grid">
+        <div class="cart-panel">
+          <h3>🛒 Keranjang Pesanan</h3>
+          <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+              <span>☕</span>
+              <p>Belum ada item di keranjang.<br />Pilih menu favoritmu!</p>
+            </div>
+          </div>
+          <div class="cart-total" id="cartTotal" style="display:none">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span id="subtotalVal">Rp 0</span>
+            </div>
+            <div class="total-row">
+              <span>PPN (10%)</span>
+              <span id="taxVal">Rp 0</span>
+            </div>
+            <div class="total-row grand">
+              <span>Total</span>
+              <span id="grandTotalVal">Rp 0</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-panel">
+          <h3>📋 Detail Pesanan</h3>
+          <div class="order-form" id="orderForm">
+            <div class="form-group">
+              <label for="customerName">Nama Kamu *</label>
+              <input type="text" id="customerName" placeholder="Contoh: Budi Santoso" />
+            </div>
+            <div class="form-group">
+              <label for="customerPhone">Nomor HP <small style="opacity:0.5;font-weight:400">(untuk poin loyalti)</small></label>
+              <div class="phone-input-wrap">
+                <input type="tel" id="customerPhone" placeholder="Contoh: 08123456789" oninput="checkLoyalty()" />
+                <div class="loyalty-badge-inline" id="loyaltyBadgeInline" style="display:none"></div>
+              </div>
+            </div>
+            <div class="redeem-panel" id="redeemPanel" style="display:none">
+              <div class="redeem-inner">
+                <span class="redeem-icon">⭐</span>
+                <div class="redeem-info">
+                  <strong id="redeemPoints">0 poin tersedia</strong>
+                  <span id="redeemTier">Bronze Member</span>
+                </div>
+                <button class="redeem-btn" id="redeemBtn" onclick="toggleRedeem()">Tukar Poin</button>
+              </div>
+              <div class="redeem-slider-wrap" id="redeemSliderWrap" style="display:none">
+                <label>Tukar <strong id="sliderPtsLabel">0</strong> poin = Diskon <strong id="sliderDiscLabel">Rp 0</strong></label>
+                <input type="range" id="redeemSlider" min="0" max="0" step="100" value="0" oninput="updateRedeemSlider()" />
+                <button class="btn-apply-redeem" onclick="applyRedeem()">Terapkan Diskon</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tableNumber">Nomor Meja</label>
+              <input type="text" id="tableNumber" placeholder="Contoh: Meja 5 (kosongkan jika take away)" />
+            </div>
+            <div class="form-group">
+              <label for="orderNote">Catatan Pesanan</label>
+              <textarea id="orderNote" rows="3" placeholder="Contoh: Kurangi gula, tanpa es, dll."></textarea>
+            </div>
+
+            <!-- PAYMENT METHOD -->
+            <div class="form-group">
+              <label>Metode Pembayaran *</label>
+              <div class="payment-methods">
+                <div class="payment-option" data-method="cash" onclick="selectPayment('cash')">
+                  <div class="payment-icon">💵</div>
+                  <div class="payment-info"><strong>Tunai (Cash)</strong><span>Bayar langsung ke kasir</span></div>
+                  <div class="payment-check">✓</div>
+                </div>
+                <div class="payment-option" data-method="qris" onclick="selectPayment('qris')">
+                  <div class="payment-icon">📱</div>
+                  <div class="payment-info"><strong>QRIS / Transfer</strong><span>Scan QR atau transfer bank</span></div>
+                  <div class="payment-check">✓</div>
+                </div>
+                <div class="payment-option" data-method="card" onclick="selectPayment('card')">
+                  <div class="payment-icon">💳</div>
+                  <div class="payment-info"><strong>Kartu Kredit / Debit</strong><span>Visa, Mastercard, GPN</span></div>
+                  <div class="payment-check">✓</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- QRIS DETAIL -->
+            <div class="payment-detail" id="qrisDetail" style="display:none">
+              <div class="qris-box">
+                <p class="qris-label">Scan QR Code di bawah ini</p>
+                <div class="qris-img">
+                  <div class="qris-placeholder">
+                    <div class="qr-grid"></div>
+                    <span>QRIS</span>
+                    <small>Kopi Nusantara</small>
+                  </div>
+                </div>
+                <p class="qris-note">atau transfer ke <strong>BCA 1234567890</strong> a/n Kopi Nusantara</p>
+                <div class="form-group" style="margin-top:12px;margin-bottom:0">
+                  <label for="transferProof">Upload Bukti Transfer (opsional)</label>
+                  <input type="file" id="transferProof" accept="image/*" class="file-input" />
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD DETAIL -->
+            <div class="payment-detail" id="cardDetail" style="display:none">
+              <div class="card-info-box">
+                <div class="card-icon-row">
+                  <span class="card-brand visa">VISA</span>
+                  <span class="card-brand mc">MC</span>
+                  <span class="card-brand gpn">GPN</span>
+                </div>
+                <p>Mesin EDC tersedia di kasir. Tunjukkan nomor pesanan kamu saat melakukan pembayaran.</p>
+              </div>
+            </div>
+
+            <input type="hidden" id="paymentMethod" value="" />
+
+            <button class="btn-order" id="submitOrderBtn" onclick="submitOrder()">
+              Buat Pesanan ☕
+            </button>
+            <p class="order-note">* Kasir akan konfirmasi pembayaran setelah pesanan dibuat</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER TRACKER SECTION -->
+  <section class="tracker-section" id="tracker">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">📍 Real-Time Tracking</p>
+        <h2 class="section-title">Pantau Pesananmu Langsung</h2>
+        <p class="tracker-subtitle">Tidak perlu bertanya ke kasir — cukup masukkan nomor pesananmu</p>
+      </div>
+      <div class="tracker-lookup">
+        <div class="tracker-input-wrap">
+          <input type="number" id="trackOrderId" placeholder="Masukkan nomor pesanan, contoh: 42" min="1" />
+          <button class="btn-track" onclick="trackOrder()">🔍 Cek Status</button>
+        </div>
+      </div>
+      <div class="tracker-result" id="trackerResult" style="display:none">
+        <div class="tracker-card">
+          <div class="tracker-header">
+            <div class="tracker-order-info">
+              <span class="tracker-order-id" id="trackerId">#0000</span>
+              <span class="tracker-customer" id="trackerCustomer">-</span>
+            </div>
+            <div class="tracker-current-status">
+              <span class="tracker-status-icon" id="trackerIcon">☕</span>
+              <span class="tracker-status-msg" id="trackerMsg">-</span>
+              <span class="tracker-eta" id="trackerEta">-</span>
+            </div>
+          </div>
+          <div class="tracker-timeline" id="trackerTimeline"></div>
+          <div class="tracker-items" id="trackerItems"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL SECTION -->
+  <section class="testimonial-section" id="testimonial">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Ulasan Pelanggan</p>
+        <h2 class="section-title">Kata Mereka Tentang Kami</h2>
+      </div>
+      <div class="testimonial-grid" id="testimonialGrid">
+        <div class="menu-loading"><div class="spinner"></div></div>
+      </div>
+      <div class="testimonial-form-wrap">
+        <h3>💬 Bagikan Pengalamanmu</h3>
+        <div class="testimonial-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nama Kamu</label>
+              <input type="text" id="testName" placeholder="Nama kamu" />
+            </div>
+            <div class="form-group">
+              <label>Rating</label>
+              <div class="star-rating" id="starRating">
+                <span class="star" data-val="1">★</span>
+                <span class="star" data-val="2">★</span>
+                <span class="star" data-val="3">★</span>
+                <span class="star" data-val="4">★</span>
+                <span class="star" data-val="5">★</span>
+              </div>
+              <input type="hidden" id="ratingVal" value="5" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ulasanmu</label>
+            <textarea id="testMessage" rows="3" placeholder="Ceritakan pengalamanmu..."></textarea>
+          </div>
+          <button class="btn-primary" onclick="submitTestimonial()">Kirim Ulasan</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section class="contact-section" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Hubungi Kami</p>
+        <h2 class="section-title">Temukan Kami</h2>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-icon">📍</div>
+          <h4>Alamat</h4>
+          <p>Jl. Riau No. 42, Bandung<br />Jawa Barat, 40115</p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">⏰</div>
+          <h4>Jam Buka</h4>
+          <p>Senin – Jumat: 07.00 – 22.00<br />Sabtu – Minggu: 08.00 – 23.00</p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">📱</div>
+          <h4>WhatsApp</h4>
+          <p><a href="https://wa.me/6281234567890" target="_blank">+62 812-3456-7890</a></p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">📸</div>
+          <h4>Instagram</h4>
+          <p><a href="https://instagram.com/kopinusantara" target="_blank">@kopinusantara</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">☕</span>
+          <span class="logo-text">Kopi Nusantara</span>
+          <p>Setiap tegukan bercerita.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#home">Beranda</a>
+          <a href="#menu">Menu</a>
+          <a href="#order">Pesan</a>
+          <a href="#contact">Kontak</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2024 Kopi Nusantara UMKM · Dibuat dengan ❤️ di Bandung</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CART SIDEBAR -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>🛒 Keranjang</h3>
+      <button onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-sidebar-items" id="sidebarItems"></div>
+    <div class="cart-sidebar-footer">
+      <p>Total: <strong id="sidebarTotal">Rp 0</strong></p>
+      <a href="#order" class="btn-primary" onclick="toggleCart()">Lanjut Pesan</a>
+    </div>
+  </div>
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ORDER SUCCESS MODAL -->
+  <div class="modal-overlay" id="modalOverlay" style="display:none">
+    <div class="modal">
+      <div class="modal-icon" id="modalIcon">🎉</div>
+      <h3 id="modalTitle">Pesanan Berhasil!</h3>
+      <p id="modalMessage">Pesananmu sedang diproses oleh barista kami.</p>
+      <div class="modal-payment-info" id="modalPaymentInfo" style="display:none">
+        <div class="modal-payment-badge" id="modalPaymentBadge"></div>
+        <div class="modal-payment-detail" id="modalPaymentDetail"></div>
+      </div>
+      <div class="modal-order-id" id="modalOrderId" style="display:none">
+        <span>Nomor Pesanan</span>
+        <strong id="modalOrderNum">#0000</strong>
+      </div>
+      <button class="btn-primary" onclick="closeModal()">Oke, Makasih! ☕</button>
+    </div>
+  </div>
+
+  <!-- LOYALTY PANEL -->
+  <div class="modal-overlay" id="loyaltyOverlay" style="display:none" onclick="closeLoyaltyPanel()">
+    <div class="loyalty-modal" onclick="event.stopPropagation()">
+      <div class="loyalty-modal-header">
+        <h3>⭐ Loyalti Kamu</h3>
+        <button onclick="closeLoyaltyPanel()">✕</button>
+      </div>
+      <div class="loyalty-modal-body" id="loyaltyModalBody">
+        <div class="loyalty-tier-card" id="ltCard">
+          <div class="lt-tier-badge" id="ltTierBadge">🥉 Bronze</div>
+          <div class="lt-points" id="ltPoints">0</div>
+          <div class="lt-points-label">Total Poin</div>
+          <div class="lt-progress-wrap">
+            <div class="lt-progress-bar"><div class="lt-progress-fill" id="ltProgressFill" style="width:0%"></div></div>
+            <span id="ltProgressLabel">0 poin lagi ke Silver</span>
+          </div>
+        </div>
+        <div class="lt-perks">
+          <h4>Keuntungan Member</h4>
+          <div class="lt-perk-list">
+            <div class="lt-perk active"><span>🥉</span><div><strong>Bronze</strong><p>1 poin per Rp 1.000</p></div></div>
+            <div class="lt-perk" id="ltPerkSilver"><span>🥈</span><div><strong>Silver (500 poin)</strong><p>1.5x poin + diskon 5%</p></div></div>
+            <div class="lt-perk" id="ltPerkGold"><span>🥇</span><div><strong>Gold (1500 poin)</strong><p>2x poin + diskon 10%</p></div></div>
+            <div class="lt-perk" id="ltPerkPlatinum"><span>💎</span><div><strong>Platinum (4000 poin)</strong><p>3x poin + diskon 15%</p></div></div>
+          </div>
+        </div>
+        <div class="lt-history" id="ltHistory"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONA QUIZ MODAL -->
+  <div class="modal-overlay" id="quizOverlay" style="display:none">
+    <div class="quiz-modal">
+      <div class="quiz-header">
+        <h3>☕ Kopi Persona Quiz</h3>
+        <p>Jawab 3 pertanyaan, kami rekomendasikan kopi terbaikmu</p>
+        <button class="quiz-close" onclick="closeQuiz()">✕</button>
+      </div>
+      <div class="quiz-body" id="quizBody"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ TRIGGER BUTTON (floating) -->
+  <button class="quiz-float-btn" onclick="openQuiz()" title="Cari kopi yang cocok buat kamu!">
+    ☕ <span>Kopi untukku?</span>
+  </button>
+
+  <script src="app.js"></script>
+</body>
+</html>

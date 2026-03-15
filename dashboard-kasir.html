@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kopi Nusantara — Kasir Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0a0f14; --card:#0e1620; --card2:#131e2b; --border:rgba(96,165,250,0.15);
+      --blue:#60a5fa; --blue-light:#93c5fd; --blue-dim:rgba(96,165,250,0.1);
+      --gold:#c9962c; --gold-light:#f0c96a;
+      --green:#4ade80; --red:#f87171; --orange:#fb923c; --purple:#c084fc;
+      --text:#e2f0ff; --muted:#5a7a9a; --muted2:#3d5a73;
+      --font:'DM Sans',sans-serif; --display:'Playfair Display',serif;
+      --radius:16px; --radius-sm:10px; --shadow:0 4px 24px rgba(0,0,0,0.5);
+      --transition:0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg); color:var(--text); font-family:var(--font); display:flex; min-height:100vh; overflow-x:hidden; }
+
+    /* ── LOCK SCREEN ── */
+    #lockScreen { position:fixed; inset:0; z-index:9999; background:var(--bg); display:flex; align-items:center; justify-content:center; font-family:var(--font); }
+    .lock-card { background:var(--card); border:1px solid rgba(96,165,250,0.3); border-radius:24px; padding:48px 40px 40px; width:360px; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,0.6); animation:lockPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes lockPop { from{opacity:0;transform:scale(0.85) translateY(24px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    .lock-role-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.3); color:var(--blue); padding:6px 16px; border-radius:50px; font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:20px; }
+    .lock-title { font-family:var(--display); font-size:1.5rem; color:var(--blue-light); margin-bottom:4px; }
+    .lock-sub { color:var(--muted); font-size:0.82rem; margin-bottom:32px; }
+    .pin-dots { display:flex; justify-content:center; gap:12px; margin-bottom:28px; }
+    .pin-dot { width:14px; height:14px; border-radius:50%; border:2px solid rgba(96,165,250,0.3); background:transparent; transition:all 0.2s ease; }
+    .pin-dot.filled { background:var(--blue); border-color:var(--blue); box-shadow:0 0 10px rgba(96,165,250,0.5); transform:scale(1.2); }
+    .pin-dot.error { border-color:var(--red); background:var(--red); animation:shake 0.4s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+    .pin-numpad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+    .pin-key { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; color:var(--text); font-size:1.2rem; font-weight:600; padding:16px; cursor:pointer; transition:all 0.15s ease; font-family:var(--font); user-select:none; }
+    .pin-key:hover { background:rgba(96,165,250,0.1); border-color:rgba(96,165,250,0.3); color:var(--blue-light); }
+    .pin-key:active { transform:scale(0.93); }
+    .pin-key.del { font-size:1rem; color:var(--muted); }
+    .pin-key.del:hover { color:var(--red); }
+    .pin-key.zero { grid-column:2; }
+    .lock-error { color:var(--red); font-size:0.8rem; height:20px; margin-top:4px; }
+    .lock-attempts { color:var(--muted); font-size:0.72rem; margin-top:6px; }
+    .lock-locked { color:var(--orange); font-size:0.82rem; font-weight:600; margin-top:12px; }
+    .lock-back { display:block; color:var(--muted); font-size:0.75rem; margin-top:20px; cursor:pointer; text-decoration:none; transition:color 0.2s; }
+    .lock-back:hover { color:var(--blue); }
+    .lock-no-pin { background:rgba(251,146,60,0.1); border:1px solid rgba(251,146,60,0.3); border-radius:10px; padding:12px 16px; margin-bottom:20px; color:var(--orange); font-size:0.8rem; line-height:1.5; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width:220px; flex-shrink:0; background:#070d14; border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+    .sidebar-logo { padding:24px 20px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .logo-icon { font-size:1.4rem; }
+    .logo-text { font-family:var(--display); font-size:1rem; color:var(--blue-light); }
+    .logo-sub { font-size:0.65rem; color:var(--muted); display:block; }
+    .role-pill { display:inline-flex; align-items:center; gap:5px; background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.25); color:var(--blue); padding:3px 10px; border-radius:50px; font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; margin-top:6px; }
+    .sidebar-nav { padding:14px 10px; flex:1; }
+    .nav-label { font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted2); padding:10px 10px 5px; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm); color:var(--muted); font-size:0.875rem; font-weight:500; cursor:pointer; transition:var(--transition); margin-bottom:2px; border:none; background:none; width:100%; text-align:left; font-family:var(--font); }
+    .nav-item:hover { background:var(--blue-dim); color:var(--blue-light); }
+    .nav-item.active { background:var(--blue-dim); color:var(--blue-light); }
+    .nav-icon { font-size:1.1rem; width:22px; text-align:center; }
+    .nav-badge { margin-left:auto; background:var(--red); color:white; font-size:0.65rem; font-weight:800; min-width:18px; height:18px; border-radius:50px; display:flex; align-items:center; justify-content:center; padding:0 5px; }
+    .sidebar-footer { padding:16px 20px; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .user-avatar { width:36px; height:36px; border-radius:50%; background:var(--blue-dim); border:2px solid rgba(96,165,250,0.3); display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+    .user-name { font-size:0.82rem; font-weight:600; color:var(--text); }
+    .user-role { font-size:0.7rem; color:var(--blue); }
+
+    /* ── MAIN ── */
+    .main { margin-left:220px; flex:1; display:flex; flex-direction:column; min-height:100vh; }
+    .topbar { position:sticky; top:0; z-index:50; background:rgba(10,15,20,0.88); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); padding:14px 28px; display:flex; align-items:center; gap:14px; }
+    .topbar-title { font-family:var(--display); font-size:1.2rem; color:var(--text); flex:1; }
+    .topbar-time { color:var(--muted); font-size:0.82rem; }
+    .live-pill { display:flex; align-items:center; gap:6px; background:rgba(74,222,128,0.08); border:1px solid rgba(74,222,128,0.2); padding:6px 14px; border-radius:50px; font-size:0.78rem; font-weight:700; color:var(--green); }
+    .live-dot { width:8px; height:8px; background:var(--green); border-radius:50%; animation:pulse 1.5s ease infinite; }
+    .refresh-btn { background:var(--blue-dim); border:1px solid var(--border); color:var(--blue); padding:8px 14px; border-radius:var(--radius-sm); font-size:0.8rem; font-weight:600; cursor:pointer; transition:var(--transition); font-family:var(--font); display:flex; align-items:center; gap:6px; }
+    .refresh-btn:hover { background:var(--blue); color:#000; }
+    .content { padding:28px; flex:1; }
+
+    /* ── SHIFT STATS ── */
+    .shift-bar { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
+    .shift-stat { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px 18px; }
+    .shift-stat:hover { border-color:var(--blue); }
+    .shift-label { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; }
+    .shift-val { font-family:var(--display); font-size:1.6rem; font-weight:900; color:var(--text); }
+    .shift-val.blue { color:var(--blue-light); }
+    .shift-val.green { color:var(--green); }
+    .shift-val.orange { color:var(--orange); }
+
+    /* ── ORDER BOARD ── */
+    .board-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .board-title { font-family:var(--display); font-size:1.2rem; color:var(--text); }
+    .filter-tabs { display:flex; gap:6px; }
+    .filter-tab { background:var(--card2); border:1px solid var(--border); color:var(--muted); padding:6px 14px; border-radius:50px; font-size:0.75rem; font-weight:600; cursor:pointer; transition:var(--transition); font-family:var(--font); }
+    .filter-tab.active { background:var(--blue); border-color:var(--blue); color:#000; }
+
+    .orders-board { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+
+    .order-ticket { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:var(--transition); }
+    .order-ticket:hover { border-color:var(--blue); transform:translateY(-2px); }
+
+    .ticket-head { padding:14px 16px; display:flex; align-items:center; justify-content:space-between; }
+    .ticket-head.pending  { background:rgba(251,146,60,0.08); border-bottom:1px solid rgba(251,146,60,0.15); }
+    .ticket-head.preparing{ background:rgba(96,165,250,0.08); border-bottom:1px solid rgba(96,165,250,0.15); }
+    .ticket-head.ready    { background:rgba(74,222,128,0.08); border-bottom:1px solid rgba(74,222,128,0.15); }
+
+    .ticket-num { font-family:var(--display); font-size:1.3rem; font-weight:900; }
+    .ticket-num.pending   { color:var(--orange); }
+    .ticket-num.preparing { color:var(--blue-light); }
+    .ticket-num.ready     { color:var(--green); }
+
+    .ticket-badge { padding:4px 10px; border-radius:50px; font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; }
+    .ticket-badge.pending  { background:rgba(251,146,60,0.12); color:var(--orange); }
+    .ticket-badge.preparing{ background:rgba(96,165,250,0.12); color:var(--blue-light); }
+    .ticket-badge.ready    { background:rgba(74,222,128,0.12); color:var(--green); }
+
+    .ticket-body { padding:14px 16px; }
+    .ticket-customer { font-weight:700; font-size:0.9rem; color:var(--text); margin-bottom:3px; }
+    .ticket-meta { font-size:0.75rem; color:var(--muted); margin-bottom:10px; }
+    .ticket-items { font-size:0.8rem; color:var(--text); line-height:1.6; background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:var(--radius-sm); margin-bottom:4px; }
+
+    .ticket-foot { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-top:1px solid var(--border); gap:8px; flex-wrap:wrap; }
+    .ticket-total { font-family:var(--display); font-size:1rem; font-weight:700; color:var(--gold-light); }
+    .ticket-pay { font-size:0.7rem; color:var(--muted); margin-top:2px; }
+    .ticket-actions { display:flex; gap:6px; flex-wrap:wrap; }
+
+    .tbtn { padding:7px 13px; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:700; border:none; cursor:pointer; transition:var(--transition); font-family:var(--font); }
+    .tbtn.process { background:var(--blue); color:#000; }
+    .tbtn.process:hover { background:var(--blue-light); }
+    .tbtn.ready { background:rgba(74,222,128,0.12); color:var(--green); border:1px solid rgba(74,222,128,0.3); }
+    .tbtn.ready:hover { background:var(--green); color:#000; }
+    .tbtn.done { background:rgba(255,255,255,0.05); color:var(--muted); border:1px solid var(--border); }
+    .tbtn.done:hover { background:rgba(255,255,255,0.1); color:var(--text); }
+    .tbtn.pay { background:rgba(201,150,44,0.15); color:var(--gold); border:1px solid rgba(201,150,44,0.3); }
+    .tbtn.pay:hover { background:var(--gold); color:#000; }
+
+    .no-orders { grid-column:1/-1; text-align:center; padding:80px 0; color:var(--muted); }
+    .no-orders-icon { font-size:3rem; margin-bottom:12px; }
+
+    /* ── TOAST ── */
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--card2); border:1px solid var(--border); color:var(--text); padding:12px 20px; border-radius:var(--radius-sm); font-size:0.875rem; z-index:3000; transform:translateY(80px); transition:transform 0.3s ease; box-shadow:var(--shadow); }
+    .toast.show { transform:translateY(0); }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    .anim { animation:fadeUp 0.35s ease both; }
+    .spinning { animation:spin 0.7s linear infinite; }
+
+    @media(max-width:800px){ .sidebar{width:60px} .logo-text,.logo-sub,.role-pill,.nav-item span:not(.nav-icon),.nav-label,.nav-badge,.user-name,.user-role{display:none} .main{margin-left:60px} }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ LOCK SCREEN ══════════════════ -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div id="noPinWarning" class="lock-no-pin" style="display:none">
+      ⚠️ PIN Kasir belum diatur oleh Owner. Minta Owner masuk ke dashboard mereka dan atur PIN Kasir terlebih dahulu.
+    </div>
+    <div class="lock-role-badge">🛒 Kasir</div>
+    <div class="lock-title">Dashboard Kasir</div>
+    <div class="lock-sub">Masukkan PIN Kasir untuk masuk</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="pin-numpad">
+      <button class="pin-key" onclick="kIn('1')">1</button><button class="pin-key" onclick="kIn('2')">2</button><button class="pin-key" onclick="kIn('3')">3</button>
+      <button class="pin-key" onclick="kIn('4')">4</button><button class="pin-key" onclick="kIn('5')">5</button><button class="pin-key" onclick="kIn('6')">6</button>
+      <button class="pin-key" onclick="kIn('7')">7</button><button class="pin-key" onclick="kIn('8')">8</button><button class="pin-key" onclick="kIn('9')">9</button>
+      <button class="pin-key del" onclick="kDel()">⌫</button><button class="pin-key zero" onclick="kIn('0')">0</button><button class="pin-key del" onclick="kClr()">✕</button>
+    </div>
+    <div class="lock-error" id="lockErr"></div>
+    <div class="lock-attempts" id="lockTry"></div>
+    <div class="lock-locked" id="lockMsg" style="display:none"></div>
+    <a class="lock-back" href="dashboard.html">← Kembali ke pilihan role</a>
+  </div>
+</div>
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-icon">🛒</span>
+    <div>
+      <span class="logo-text">Kopi Nusantara</span>
+      <span class="logo-sub">Kasir Panel</span>
+      <span class="role-pill">🛒 Kasir</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Pesanan</div>
+    <button class="nav-item active" id="nv-live"><span class="nav-icon">📋</span><span>Live Orders</span><span class="nav-badge" id="pendBadge" style="display:none">0</span></button>
+    <div class="nav-label">Info</div>
+    <button class="nav-item" onclick="window.open('home.html')"><span class="nav-icon">🌐</span><span>Website</span></button>
+    <button class="nav-item" onclick="logout()"><span class="nav-icon">🚪</span><span>Logout</span></button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-avatar">🛒</div>
+    <div><div class="user-name">Kasir</div><div class="user-role">Order Access</div></div>
+  </div>
+</aside>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">🛒 Live Orders</div>
+    <div class="live-pill"><span class="live-dot"></span>Auto-refresh 15d</div>
+    <div class="topbar-time" id="clock">--:--</div>
+    <button class="refresh-btn" onclick="loadOrders()"><span id="rfIcon">🔄</span> Refresh</button>
+  </div>
+
+  <div class="content">
+    <!-- Shift stats bar -->
+    <div class="shift-bar">
+      <div class="shift-stat"><div class="shift-label">⏳ Antrian</div><div class="shift-val orange" id="sPending">—</div></div>
+      <div class="shift-stat"><div class="shift-label">☕ Diproses</div><div class="shift-val blue" id="sPreparing">—</div></div>
+      <div class="shift-stat"><div class="shift-label">🔔 Siap Ambil</div><div class="shift-val green" id="sReady">—</div></div>
+      <div class="shift-stat"><div class="shift-label">✅ Selesai Hari Ini</div><div class="shift-val" id="sDone">—</div></div>
+      <div class="shift-stat"><div class="shift-label">💰 Revenue Shift</div><div class="shift-val" id="sRevenue">—</div></div>
+    </div>
+
+    <!-- Order board -->
+    <div class="board-header">
+      <div class="board-title">Pesanan Masuk</div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterOrders('all',this)">Semua</button>
+        <button class="filter-tab" onclick="filterOrders('pending',this)">⏳ Pending</button>
+        <button class="filter-tab" onclick="filterOrders('preparing',this)">☕ Diproses</button>
+        <button class="filter-tab" onclick="filterOrders('ready',this)">🔔 Siap</button>
+      </div>
+    </div>
+    <div class="orders-board" id="ordersBoard">
+      <div class="no-orders"><div class="no-orders-icon">⏳</div><p>Memuat pesanan...</p></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = 'http://localhost:3000/api';
+  const PIN_KASIR_KEY = 'kopi_pin_kasir';
+  const SESSION_KEY   = 'kopi_session_kasir';
+  const ATTEMPTS_KEY  = 'kopi_atm_kasir';
+  const LOCKOUT_KEY   = 'kopi_lock_kasir';
+  const MAX_ATM = 5, LOCK_MIN = 5;
+
+  let buf = '', locked = false;
+  let allOrders = [], activeFilter = 'all';
+  let autoRefresh;
+
+  // ── AUTH ──────────────────────────────────────────
+  (function init() {
+    // Check if kasir PIN has been set by owner
+    const hasPin = localStorage.getItem(PIN_KASIR_KEY);
+    if (!hasPin) {
+      document.getElementById('noPinWarning').style.display = 'block';
+    }
+    if (sessionStorage.getItem(SESSION_KEY) === 'ok') {
+      document.getElementById('lockScreen').style.display = 'none';
+      onEnter(); return;
+    }
+    checkLock();
+  })();
+
+  function getPin() { return localStorage.getItem(PIN_KASIR_KEY); }
+
+  function checkLock() {
+    const until = localStorage.getItem(LOCKOUT_KEY);
+    if (!until) return;
+    const rem = Math.ceil((+until - Date.now()) / 60000);
+    if (rem > 0) { setLocked(rem); setTimeout(checkLock, 60000); }
+    else { localStorage.removeItem(LOCKOUT_KEY); localStorage.removeItem(ATTEMPTS_KEY); }
+  }
+
+  function setLocked(min) {
+    locked = true;
+    document.querySelectorAll('.pin-key').forEach(k => k.disabled = true);
+    document.getElementById('lockMsg').style.display = 'block';
+    document.getElementById('lockMsg').textContent = `🔒 Dikunci ${min} menit lagi`;
+  }
+
+  function kIn(d) {
+    if (locked || buf.length >= 4) return;
+    buf += d; updateDots();
+    if (buf.length === 4) setTimeout(checkPin, 200);
+  }
+  function kDel() { buf = buf.slice(0,-1); updateDots(); }
+  function kClr() { buf=''; updateDots(); document.getElementById('lockErr').textContent=''; }
+
+  function updateDots(err=false) {
+    for(let i=0;i<4;i++){
+      const d=document.getElementById('d'+i);
+      d.className='pin-dot';
+      if(i<buf.length) d.classList.add('filled');
+      if(err) d.classList.add('error');
+    }
+  }
+
+  function checkPin() {
+    const pin = getPin();
+    if (!pin) {
+      document.getElementById('lockErr').textContent = '⚠️ PIN belum diatur oleh Owner!';
+      buf=''; updateDots(); return;
+    }
+    const atm = parseInt(localStorage.getItem(ATTEMPTS_KEY)||'0');
+    if (buf === pin) {
+      localStorage.removeItem(ATTEMPTS_KEY); localStorage.removeItem(LOCKOUT_KEY);
+      sessionStorage.setItem(SESSION_KEY, 'ok');
+      const ls = document.getElementById('lockScreen');
+      ls.style.transition='opacity 0.4s ease'; ls.style.opacity='0';
+      setTimeout(() => { ls.style.display='none'; onEnter(); }, 400);
+    } else {
+      const n = atm+1; localStorage.setItem(ATTEMPTS_KEY, n);
+      updateDots(true);
+      document.getElementById('lockErr').textContent = '❌ PIN salah!';
+      if (n >= MAX_ATM) {
+        localStorage.setItem(LOCKOUT_KEY, Date.now()+LOCK_MIN*60000);
+        setLocked(LOCK_MIN);
+      } else {
+        document.getElementById('lockTry').textContent = `Sisa percobaan: ${MAX_ATM-n}`;
+      }
+      setTimeout(() => { buf=''; updateDots(); if(!locked) document.getElementById('lockErr').textContent=''; }, 700);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('lockScreen').style.display==='none') return;
+    if (locked) return;
+    if (e.key>='0'&&e.key<='9') kIn(e.key);
+    if (e.key==='Backspace') kDel();
+    if (e.key==='Escape') kClr();
+  });
+
+  function onEnter() {
+    startClock();
+    loadOrders();
+    autoRefresh = setInterval(loadOrders, 15000);
+  }
+
+  function logout() {
+    if (!confirm('Yakin logout?')) return;
+    clearInterval(autoRefresh);
+    sessionStorage.removeItem(SESSION_KEY);
+    location.reload();
+  }
+
+  // ── CLOCK ──────────────────────────────────────────
+  function startClock() {
+    const tick = () => document.getElementById('clock').textContent = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    tick(); setInterval(tick, 1000);
+  }
+
+  // ── ORDERS ─────────────────────────────────────────
+  async function loadOrders() {
+    const ic = document.getElementById('rfIcon');
+    ic.classList.add('spinning');
+    try {
+      const {data} = await (await fetch(`${API}/dashboard/live-orders`)).json();
+      allOrders = data || [];
+    } catch {
+      allOrders = getDemoOrders();
+    }
+    updateShiftStats();
+    renderOrders();
+    setTimeout(() => ic.classList.remove('spinning'), 500);
+  }
+
+  function getDemoOrders() {
+    return [
+      {id:42,customer_name:'Budi S.',table_number:'Meja 3',status:'preparing',payment_method:'cash',payment_status:'paid',total_amount:83000,items_text:'1x Cappuccino · 1x Avocado Toast',created_at:new Date(Date.now()-300000)},
+      {id:43,customer_name:'Rina P.',table_number:null,status:'pending',payment_method:'qris',payment_status:'unpaid',total_amount:32000,items_text:'1x Cold Brew',created_at:new Date(Date.now()-60000)},
+      {id:44,customer_name:'Dian A.',table_number:'Meja 7',status:'ready',payment_method:'card',payment_status:'paid',total_amount:58000,items_text:'2x Es Kopi Susu · 1x Banana Cake',created_at:new Date(Date.now()-900000)},
+      {id:45,customer_name:'Andi M.',table_number:'Meja 2',status:'pending',payment_method:'cash',payment_status:'unpaid',total_amount:25000,items_text:'1x Es Kopi Susu',created_at:new Date(Date.now()-30000)},
+    ];
+  }
+
+  function updateShiftStats() {
+    const pending   = allOrders.filter(o=>o.status==='pending').length;
+    const preparing = allOrders.filter(o=>o.status==='preparing').length;
+    const ready     = allOrders.filter(o=>o.status==='ready').length;
+    document.getElementById('sPending').textContent   = pending;
+    document.getElementById('sPreparing').textContent = preparing;
+    document.getElementById('sReady').textContent     = ready;
+
+    const badge = document.getElementById('pendBadge');
+    badge.textContent = pending;
+    badge.style.display = pending > 0 ? 'flex' : 'none';
+
+    // Fetch done count & revenue from API
+    fetch(`${API}/dashboard/stats`).then(r=>r.json()).then(({data})=>{
+      document.getElementById('sDone').textContent = data.today_orders || '—';
+      document.getElementById('sRevenue').textContent = fmtRp(data.today_revenue);
+    }).catch(()=>{
+      document.getElementById('sDone').textContent = '—';
+      document.getElementById('sRevenue').textContent = 'Rp —';
+    });
+  }
+
+  function filterOrders(f, btn) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderOrders();
+  }
+
+  function renderOrders() {
+    const filtered = activeFilter === 'all'
+      ? allOrders
+      : allOrders.filter(o=>o.status===activeFilter);
+
+    if (!filtered || filtered.length === 0) {
+      document.getElementById('ordersBoard').innerHTML = `
+        <div class="no-orders">
+          <div class="no-orders-icon">${activeFilter==='all'?'✅':'🔍'}</div>
+          <p>${activeFilter==='all'?'Tidak ada pesanan aktif saat ini.':'Tidak ada pesanan dengan status ini.'}</p>
+        </div>`;
+      return;
+    }
+
+    const pmLb = {cash:'💵 Cash',qris:'📱 QRIS',card:'💳 Kartu'};
+    document.getElementById('ordersBoard').innerHTML = filtered.map(o => `
+      <div class="order-ticket anim">
+        <div class="ticket-head ${o.status}">
+          <div class="ticket-num ${o.status}">#${String(o.id).padStart(4,'0')}</div>
+          <span class="ticket-badge ${o.status}">${statusLabel(o.status)}</span>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-customer">${o.customer_name}</div>
+          <div class="ticket-meta">${o.table_number||'🥡 Take Away'} · ${timeSince(o.created_at)}</div>
+          <div class="ticket-items">${o.items_text||'-'}</div>
+        </div>
+        <div class="ticket-foot">
+          <div>
+            <div class="ticket-total">${fmtRp(o.total_amount)}</div>
+            <div class="ticket-pay">${pmLb[o.payment_method]||'—'} · ${o.payment_status==='paid'?'✅ Lunas':'⏳ Belum bayar'}</div>
+          </div>
+          <div class="ticket-actions">
+            ${o.status==='pending'   ? `<button class="tbtn process" onclick="updStatus(${o.id},'preparing')">☕ Proses</button>` : ''}
+            ${o.status==='preparing' ? `<button class="tbtn ready"   onclick="updStatus(${o.id},'ready')">🔔 Siap</button>` : ''}
+            ${o.status==='ready'     ? `<button class="tbtn done"    onclick="updStatus(${o.id},'done')">✅ Selesai</button>` : ''}
+            ${o.payment_status==='unpaid' ? `<button class="tbtn pay" onclick="confPay(${o.id})">💳 Bayar</button>` : ''}
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function statusLabel(s) {
+    return {pending:'⏳ Pending',preparing:'☕ Diproses',ready:'🔔 Siap Ambil',done:'✅ Selesai'}[s]||s;
+  }
+
+  async function updStatus(id, status) {
+    try {
+      await fetch(`${API}/orders/${id}/status`, {
+        method:'PATCH', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({status})
+      });
+      toast(`✅ #${id} → ${statusLabel(status)}`);
+      loadOrders();
+    } catch {
+      // demo mode: update locally
+      const o = allOrders.find(x=>x.id===id);
+      if(o) o.status = status;
+      updateShiftStats();
+      renderOrders();
+      toast(`✅ Demo: #${id} → ${statusLabel(status)}`);
+    }
+  }
+
+  async function confPay(id) {
+    try {
+      await fetch(`${API}/orders/${id}/payment`, {
+        method:'PATCH', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({payment_status:'paid'})
+      });
+      toast(`💳 Pembayaran #${id} dikonfirmasi!`);
+      loadOrders();
+    } catch {
+      const o = allOrders.find(x=>x.id===id);
+      if(o) o.payment_status = 'paid';
+      renderOrders();
+      toast(`💳 Demo: pembayaran #${id} dikonfirmasi`);
+    }
+  }
+
+  // ── HELPERS ────────────────────────────────────────
+  function fmtRp(n) { return 'Rp '+Math.round(Number(n)).toLocaleString('id-ID'); }
+
+  function timeSince(date) {
+    const diff = Math.floor((Date.now()-new Date(date))/1000);
+    if (diff<60) return `${diff}d lalu`;
+    if (diff<3600) return `${Math.floor(diff/60)}m lalu`;
+    return `${Math.floor(diff/3600)}j lalu`;
+  }
+
+  let tTimer;
+  function toast(msg) {
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(tTimer); tTimer=setTimeout(()=>t.classList.remove('show'),3000);
+  }
+</script>
+</body>
+</html>

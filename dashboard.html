@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kopi Nusantara — Pilih Akses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0a04; --card: #1e1408; --border: rgba(201,150,44,0.2);
+      --gold: #c9962c; --gold-light: #f0c96a;
+      --blue: #60a5fa; --text: #f5e6d0; --muted: #8b6a4a;
+      --font: 'DM Sans', sans-serif; --display: 'Playfair Display', serif;
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 24px; overflow: hidden;
+    }
+    .bg-circle { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+    .bc1 { width:500px; height:500px; background:rgba(201,150,44,0.08); top:-100px; right:-100px; }
+    .bc2 { width:300px; height:300px; background:rgba(96,165,250,0.05); bottom:-50px; left:-50px; }
+    .portal-wrap { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; width:100%; max-width:600px; }
+    .portal-logo { font-size:3.5rem; margin-bottom:12px; animation: up 0.5s ease both; }
+    .portal-title { font-family:var(--display); font-size:2.2rem; font-weight:900; color:var(--gold-light); text-align:center; margin-bottom:6px; animation: up 0.5s ease 0.1s both; }
+    .portal-sub { color:var(--muted); font-size:0.875rem; text-align:center; margin-bottom:48px; animation: up 0.5s ease 0.15s both; }
+    .role-cards { display:grid; grid-template-columns:1fr 1fr; gap:20px; width:100%; animation: up 0.5s ease 0.25s both; }
+    .role-card {
+      background:var(--card); border:2px solid var(--border); border-radius:20px;
+      padding:36px 28px; text-align:center; cursor:pointer; transition:var(--transition);
+      display:flex; flex-direction:column; align-items:center; position:relative; overflow:hidden;
+    }
+    .role-card:hover { transform:translateY(-6px); }
+    .role-card.owner:hover { border-color:var(--gold); box-shadow:0 16px 48px rgba(201,150,44,0.2); }
+    .role-card.kasir:hover { border-color:var(--blue); box-shadow:0 16px 48px rgba(96,165,250,0.15); }
+    .role-icon { font-size:3.5rem; margin-bottom:16px; }
+    .role-tag { display:inline-block; font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; padding:4px 12px; border-radius:50px; margin-bottom:12px; }
+    .owner .role-tag { background:rgba(201,150,44,0.15); color:var(--gold); border:1px solid rgba(201,150,44,0.3); }
+    .kasir .role-tag { background:rgba(96,165,250,0.1); color:var(--blue); border:1px solid rgba(96,165,250,0.3); }
+    .role-name { font-family:var(--display); font-size:1.5rem; font-weight:900; margin-bottom:10px; }
+    .owner .role-name { color:var(--gold-light); }
+    .kasir .role-name { color:var(--blue); }
+    .role-desc { color:var(--muted); font-size:0.8rem; line-height:1.6; margin-bottom:20px; }
+    .role-features { display:flex; flex-direction:column; gap:6px; text-align:left; width:100%; }
+    .role-feature { display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--muted); }
+    .role-feature-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .owner .role-feature-dot { background:var(--gold); }
+    .kasir .role-feature-dot { background:var(--blue); }
+    .role-enter-btn { margin-top:24px; width:100%; padding:12px; border-radius:10px; border:none; font-weight:700; font-size:0.875rem; cursor:pointer; font-family:var(--font); transition:var(--transition); }
+    .owner .role-enter-btn { background:var(--gold); color:#000; }
+    .owner .role-enter-btn:hover { background:var(--gold-light); }
+    .kasir .role-enter-btn { background:var(--blue); color:#000; }
+    .kasir .role-enter-btn:hover { background:#93c5fd; }
+    .portal-footer { margin-top:32px; color:var(--muted); font-size:0.75rem; display:flex; align-items:center; gap:8px; animation: up 0.5s ease 0.4s both; }
+    .portal-footer a { color:var(--gold); text-decoration:none; font-weight:600; }
+    @keyframes up { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @media(max-width:500px){ .role-cards{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="bg-circle bc1"></div>
+  <div class="bg-circle bc2"></div>
+  <div class="portal-wrap">
+    <div class="portal-logo">☕</div>
+    <h1 class="portal-title">Kopi Nusantara</h1>
+    <p class="portal-sub">Pilih role untuk masuk ke dashboard</p>
+    <div class="role-cards">
+      <div class="role-card owner" onclick="goTo('owner')">
+        <div class="role-icon">👑</div>
+        <span class="role-tag">Owner</span>
+        <div class="role-name">Dashboard Owner</div>
+        <div class="role-desc">Kelola bisnis, lihat revenue, dan analitik lengkap</div>
+        <div class="role-features">
+          <div class="role-feature"><div class="role-feature-dot"></div>Revenue & statistik harian</div>
+          <div class="role-feature"><div class="role-feature-dot"></div>Chart & trending menu</div>
+          <div class="role-feature"><div class="role-feature-dot"></div>AI insight & rekomendasi</div>
+          <div class="role-feature"><div class="role-feature-dot"></div>Manajemen menu & PIN</div>
+        </div>
+        <button class="role-enter-btn">Masuk sebagai Owner →</button>
+      </div>
+      <div class="role-card kasir" onclick="goTo('kasir')">
+        <div class="role-icon">🛒</div>
+        <span class="role-tag">Kasir</span>
+        <div class="role-name">Dashboard Kasir</div>
+        <div class="role-desc">Proses pesanan, konfirmasi bayar, dan update status</div>
+        <div class="role-features">
+          <div class="role-feature"><div class="role-feature-dot"></div>Live order monitor</div>
+          <div class="role-feature"><div class="role-feature-dot"></div>Update status pesanan</div>
+          <div class="role-feature"><div class="role-feature-dot"></div>Konfirmasi pembayaran</div>
+          <div class="role-feature"><div class="role-feature-dot"></div>Ringkasan shift hari ini</div>
+        </div>
+        <button class="role-enter-btn">Masuk sebagai Kasir →</button>
+      </div>
+    </div>
+    <div class="portal-footer">
+      <span>🌐</span><a href="home.html">← Kembali ke Website</a><span>·</span><span>v2.0</span>
+    </div>
+  </div>
+  <script>
+    function goTo(role) {
+      const card = document.querySelector('.role-card.' + role);
+      card.style.transform = 'scale(0.97)';
+      setTimeout(() => {
+        window.location.href = role === 'owner' ? 'dashboard-owner.html' : 'dashboard-kasir.html';
+      }, 150);
+    }
+  </script>
+</body>
+</html>

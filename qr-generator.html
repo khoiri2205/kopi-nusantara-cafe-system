@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kopi Nusantara — Generator QR Meja</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg:#0f0a04; --card:#1e1408; --card2:#261b0a; --border:rgba(201,150,44,0.2);
+      --gold:#c9962c; --gold-light:#f0c96a; --text:#f5e6d0; --muted:#8b6a4a;
+      --font:'DM Sans',sans-serif; --display:'Playfair Display',serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--text); font-family:var(--font); padding:32px 24px; }
+    h1 { font-family:var(--display); font-size:1.8rem; color:var(--gold-light); margin-bottom:6px; }
+    .sub { color:var(--muted); font-size:0.875rem; margin-bottom:32px; }
+
+    .config-row { display:flex; gap:12px; align-items:flex-end; margin-bottom:32px; flex-wrap:wrap; }
+    .config-group label { display:block; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:6px; }
+    .config-group input {
+      background:var(--card); border:1.5px solid var(--border); color:var(--text);
+      padding:10px 14px; border-radius:10px; font-size:0.9rem; font-family:var(--font);
+      transition:all 0.2s;
+    }
+    .config-group input:focus { outline:none; border-color:var(--gold); }
+    .gen-btn {
+      background:var(--gold); color:#000; border:none; border-radius:10px;
+      padding:11px 24px; font-weight:700; font-size:0.9rem; cursor:pointer;
+      font-family:var(--font); transition:all 0.2s;
+    }
+    .gen-btn:hover { background:var(--gold-light); }
+
+    .qr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; }
+
+    .qr-card {
+      background:var(--card); border:1px solid var(--border); border-radius:16px;
+      padding:20px; text-align:center; transition:all 0.2s;
+    }
+    .qr-card:hover { border-color:var(--gold); }
+    .qr-card-title { font-family:var(--display); font-size:1.1rem; color:var(--gold-light); margin-bottom:4px; }
+    .qr-card-url { font-size:0.65rem; color:var(--muted); margin-bottom:14px; word-break:break-all; }
+    .qr-canvas-wrap { background:#fff; border-radius:10px; padding:10px; display:inline-block; margin-bottom:14px; }
+    .qr-download {
+      display:block; width:100%; background:rgba(201,150,44,0.1); border:1px solid var(--border);
+      color:var(--gold); border-radius:8px; padding:8px; font-size:0.78rem; font-weight:700;
+      cursor:pointer; font-family:var(--font); transition:all 0.2s; text-decoration:none;
+    }
+    .qr-download:hover { background:var(--gold); color:#000; }
+
+    .print-btn {
+      margin-top:28px; background:var(--card2); border:1px solid var(--border);
+      color:var(--gold); padding:12px 24px; border-radius:10px; font-weight:700;
+      font-size:0.875rem; cursor:pointer; font-family:var(--font); transition:all 0.2s;
+    }
+    .print-btn:hover { background:var(--gold); color:#000; }
+
+    @media print {
+      body { background:#fff; color:#000; padding:0; }
+      h1, .sub, .config-row, .print-btn { display:none; }
+      .qr-grid { grid-template-columns: repeat(3,1fr); gap:12px; }
+      .qr-card { background:#fff; border:1px solid #ddd; break-inside:avoid; }
+      .qr-card-title { color:#000; }
+      .qr-card-url { color:#666; }
+      .qr-download { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>☕ Generator QR Code Meja</h1>
+  <p class="sub">Buat QR code untuk setiap meja — pelanggan scan langsung ke halaman pesan</p>
+
+  <div class="config-row">
+    <div class="config-group">
+      <label>Base URL Halaman Pesan</label>
+      <input type="url" id="baseUrl" value="http://localhost:5500/order.html" style="width:320px" />
+    </div>
+    <div class="config-group">
+      <label>Jumlah Meja</label>
+      <input type="number" id="tableCount" value="10" min="1" max="50" style="width:90px" />
+    </div>
+    <button class="gen-btn" onclick="generateQRs()">🔄 Generate QR</button>
+  </div>
+
+  <div class="qr-grid" id="qrGrid"></div>
+
+  <button class="print-btn" onclick="window.print()">🖨️ Print Semua QR</button>
+
+  <script>
+    function generateQRs() {
+      const base = document.getElementById('baseUrl').value.trim().replace(/\/$/, '');
+      const count = parseInt(document.getElementById('tableCount').value);
+      const grid = document.getElementById('qrGrid');
+      grid.innerHTML = '';
+
+      for (let i = 1; i <= count; i++) {
+        const url = `${base}?meja=${i}`;
+        const card = document.createElement('div');
+        card.className = 'qr-card';
+
+        const canvasId = `qr-canvas-${i}`;
+        card.innerHTML = `
+          <div class="qr-card-title">🪑 Meja ${i}</div>
+          <div class="qr-card-url">${url}</div>
+          <div class="qr-canvas-wrap" id="${canvasId}"></div>
+          <a class="qr-download" id="dl-${i}" href="#" download="qr-meja-${i}.png"
+             onclick="downloadQR(${i}, event)">⬇ Download PNG</a>`;
+
+        grid.appendChild(card);
+
+        new QRCode(document.getElementById(canvasId), {
+          text: url,
+          width: 160, height: 160,
+          colorDark: '#1a0f00', colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M,
+        });
+      }
+    }
+
+    function downloadQR(num, e) {
+      e.preventDefault();
+      const wrap = document.getElementById(`qr-canvas-${num}`);
+      const img = wrap.querySelector('img') || wrap.querySelector('canvas');
+      if (!img) return;
+      const src = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+      const a = document.createElement('a');
+      a.href = src; a.download = `qr-meja-${num}.png`; a.click();
+    }
+
+    // Auto-generate on load
+    window.onload = () => generateQRs();
+  </script>
+</body>
+</html>
